@@ -1,0 +1,26 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: Configuration
+    policy.open-cluster-management.io/controls: 'Applications'
+    policy.open-cluster-management.io/description: Configure application prerreqs
+    policy.open-cluster-management.io/standards: ''
+  name: configure-application-prerreqs
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configure-application-prerreqs
+        spec:
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: example1

@@ -20,6 +20,7 @@ Example deployments to showcase OpenShift GitOps (ArgoCD 🦑).
 ## Policies
 
 Example ACM (multi-cluster management) policies.
+- Application Prerreqs
 - Authentication ✍️
 - Image Registry 🌠
 - Managed Service Account 🐕‍🦺
