@@ -1,0 +1,89 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: Configuration
+    policy.open-cluster-management.io/controls: 'Post-Install'
+    policy.open-cluster-management.io/description: Configure ldap and httpass authentication
+    policy.open-cluster-management.io/standards: ''
+  name: configure-authentication
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configure-authentication
+        spec:
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: config.openshift.io/v1
+                kind: OAuth
+                metadata:
+                  name: cluster
+                spec:
+                  identityProviders:
+                    - htpasswd:
+                        fileData:
+                          name: htpass-secret
+                      mappingMethod: claim
+                      name: HTpasswd
+                      type: HTPasswd
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                metadata:
+                  name: htpass-secret
+                  namespace: openshift-config
+                type: Opaque
+                data:
+                  htpasswd: YWRtaW46JGFwcjEkbHpsUlV4UEMkR2xVOW1GQk5pWE5aMkFNeWtMWUZWMAphZG1pbjI6JGFwcjEkOHZEcWdCTWskN3FVTTN6YlZKM3lUWXkycVNZejBHMQo=
+                kind: Secret
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: cluster-admin-dmi
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: cluster-admin
+                subjects:
+                  - apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                    name: admin
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: cluster-admin-admin2
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: cluster-admin
+                subjects:
+                  - apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                    name: admin2
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configure-kubeadmin
+        spec:
+          object-templates:
+            - complianceType: mustnothave
+              objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: kubeadmin
+                  namespace: kube-system
+          pruneObjectBehavior: None
+          remediationAction: inform
+          severity: medium

@@ -1,0 +1,28 @@
+
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: Configuration
+    policy.open-cluster-management.io/controls: 'Post-Install'
+    policy.open-cluster-management.io/description: Configure ACM Managed SA and Cluster permissions
+    policy.open-cluster-management.io/standards: ''
+  name: configure-msa
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configure-msa
+        spec:
+          pruneObjectBehavior: None
+          remediationAction: inform
+          severity: medium
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.open-cluster-management.io/v1alpha1
+                kind: ClusterPermission

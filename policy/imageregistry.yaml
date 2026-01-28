@@ -1,0 +1,57 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: Configuration
+    policy.open-cluster-management.io/controls: 'Post-Install'
+    policy.open-cluster-management.io/description: Configuración de ImageRegistry
+    policy.open-cluster-management.io/standards: ''
+  name: configure-image-registry
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: configure-image-registry
+        spec:
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: imageregistry.operator.openshift.io/v1
+                kind: Config
+                metadata:
+                  name: cluster
+                spec:
+                  # nodeSelector:
+                  #   node-role.kubernetes.io/infra: ''
+                  rolloutStrategy: Recreate
+                  managementState: Managed
+                  storage:
+                    managementState: Unmanaged
+                    pvc:
+                      claim: image-registry
+                  replicas: 1
+                  tolerations:
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/infra
+                      operator: Exists
+            - complianceType: musthave
+              objectDefinition:
+                kind: PersistentVolumeClaim
+                apiVersion: v1
+                metadata:
+                  name: image-registry
+                  namespace: openshift-image-registry
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 100Gi
+                  volumeMode: Filesystem
+          pruneObjectBehavior: None
+          remediationAction: enforce
+          severity: low

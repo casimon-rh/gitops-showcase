@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: registry.access.redhat.com
+  pullPolicy: IfNotPresent
+  tag: "latest"
+  overrideName: "nginx-124"
+  overrideNamespace: "ubi8"
+
+nameOverride: ""
+fullnameOverride: "test-nginx"
+
+command:
+  override: true
+  list:
+  - nginx
+  - '-g'
+  - '"daemon off;"'
+
+service:
+  type: ClusterIP
+  port: 8080
+
+
+route:
+  injectTimeout: false
+
+environment: []

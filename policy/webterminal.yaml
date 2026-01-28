@@ -1,0 +1,29 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: 'Operators, Tools'
+    policy.open-cluster-management.io/controls: 'Post-Install'
+    policy.open-cluster-management.io/description: Instala operador Web Terminal en todos los clusters
+    policy.open-cluster-management.io/standards: ''
+  name: install-web-terminal-operator
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: install-web-terminal-operator
+        spec:
+          complianceType: musthave
+          remediationAction: enforce
+          severity: low
+          subscription:
+            channel: fast
+            name: web-terminal
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          upgradeApproval: None
+          versions: null
