@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: multi-cluster
+  namespace: openshift-gitops
+spec:
+  generators:
+    - clusterDecisionResource:
+        configMapRef: acm-placement
+        labelSelector:
+          matchLabels:
+            cluster.open-cluster-management.io/placement: multi-cluster-placement
+        requeueAfterSeconds: 180
+  template:
+    metadata:
+      labels:
+        velero.io/exclude-from-backup: 'true'
+      name: 'multi-cluster-{{name}}'
+    spec:
+      destination:
+        namespace: example1
+        server: '{{server}}'
+      project: default
+      sources:
+        - helm:
+            values: |
+              replicaCount: 1
+              image:
+                repository: registry.access.redhat.com
+                pullPolicy: IfNotPresent
+                tag: latest
+                overrideName: "nginx-124"
+                overrideNamespace: "ubi8"
+              fullnameOverride: "test-nginx-{{name}}"
+              command:
+                override: true
+                list:
+                - nginx
+                - '-g'
+                - '"daemon off;"'
+          path: application-chart
+          repoURL: 'https://github.com/casimon-rh/gitops-showcase'
+          targetRevision: main
+      syncPolicy:
+        automated: {}

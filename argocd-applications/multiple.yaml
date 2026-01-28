@@ -31,7 +31,7 @@ spec:
                 tag: "{{tag}}"
                 overrideName: "nginx-124"
                 overrideNamespace: "ubi8"
-              fullnameOverride: "test-nginx"
+              fullnameOverride: "test-nginx-{{number}}"
               command:
                 override: true
                 list:
