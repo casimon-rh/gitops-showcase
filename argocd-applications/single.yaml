@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: single
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: example2
+    server: 'https://kubernetes.default.svc'
+  project: default
+  sources:
+    - helm:
+        values: |
+          replicaCount: 1
+          image:
+            repository: registry.access.redhat.com
+            pullPolicy: IfNotPresent
+            tag: "latest"
+            overrideName: "nginx-124"
+            overrideNamespace: "ubi8"
+          fullnameOverride: "test-nginx"
+          command:
+            override: true
+            list:
+            - nginx
+            - '-g'
+            - '"daemon off;"'
+      path: application-chart/
+      repoURL: 'https://github.com/casimon-rh/gitops-showcase'
+      targetRevision: main
+  syncPolicy:
+    automated: {}

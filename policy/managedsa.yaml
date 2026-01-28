@@ -9,7 +9,7 @@ metadata:
     policy.open-cluster-management.io/standards: ''
   name: configure-msa
 spec:
-  disabled: false
+  disabled: true
   remediationAction: inform
   policy-templates:
     - objectDefinition:
